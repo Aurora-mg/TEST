@@ -2,114 +2,109 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍽️ 客官不可以 · 今日美食饮料选择器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🍽️ 客官不可以 · 美食评分版</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-        }
-
-        /* 主内容区 */
-        .main-content {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
         }
 
-        /* 卡片样式 */
+        /* 手机端优化：所有卡片圆角更大，间距更小 */
         .card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid rgba(255,255,255,0.5);
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .subtitle {
+        .version-badge {
+            font-size: 0.8rem;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 30px;
             color: #666;
-            font-size: 1rem;
-            margin-bottom: 16px;
-            padding-left: 8px;
-            border-left: 4px solid #ff8e88;
-            line-height: 1.6;
+            -webkit-text-fill-color: #666;
         }
 
-        /* 使用说明 */
+        /* 使用说明 - 手机端优化 */
         .instructions {
             background: #fff9f0;
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
             color: #666;
             border: 1px dashed #ff8e88;
         }
 
         .instructions p {
-            margin: 8px 0;
+            margin: 6px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        /* 选项卡 */
+        /* 选项卡 - 手机端优化 */
         .tabs {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .tab {
             flex: 1;
-            padding: 16px;
+            padding: 12px 8px;
             border: none;
             background: #f0f0f0;
-            border-radius: 20px;
+            border-radius: 40px;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         .tab.active {
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             color: white;
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
         }
 
         .tab-content {
@@ -120,29 +115,28 @@
             display: block;
         }
 
-        /* 地点网格 */
+        /* 地点网格 - 手机端优化：2列布局 */
         .location-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .location-card {
             background: white;
             border: 2px solid #e0e0e0;
-            border-radius: 20px;
-            padding: 16px 8px;
+            border-radius: 18px;
+            padding: 12px 4px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        .location-card:hover {
-            transform: translateY(-2px);
-            border-color: #ff6b6b;
-            box-shadow: 0 10px 20px rgba(255,107,107,0.1);
+        .location-card:active {
+            transform: scale(0.98);
+            background: #fff0f0;
         }
 
         .location-card.selected {
@@ -152,177 +146,330 @@
         }
 
         .location-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
+            font-size: 1.8rem;
+            margin-bottom: 4px;
         }
 
         .location-name {
             font-weight: 600;
             color: #333;
+            font-size: 0.95rem;
         }
 
         .location-floor {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #999;
         }
 
-        /* 管理按钮 */
+        /* 管理按钮 - 手机端优化 */
         .manage-section {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 8px;
+            margin: 12px 0;
             flex-wrap: wrap;
         }
 
         .manage-btn {
-            padding: 10px 16px;
+            padding: 8px 14px;
             border: 2px dashed #ff8e88;
             background: white;
             border-radius: 30px;
             color: #ff6b6b;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            flex: 1 1 auto;
         }
 
-        .manage-btn:hover {
+        .manage-btn:active {
             background: #ff6b6b;
             color: white;
-            border-color: #ff6b6b;
         }
 
-        /* 菜单区域 */
+        /* 菜单区域 - 手机端优化 */
         .menu-section {
             background: #f8f9fa;
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 20px;
+            border-radius: 18px;
+            padding: 16px;
+            margin-top: 16px;
         }
 
         .menu-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .menu-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .menu-count {
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
         }
 
         .menu-list {
             list-style: none;
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
+        /* 菜单项 - 新增评分显示 */
         .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
             background: white;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             transition: all 0.2s;
             cursor: pointer;
         }
 
-        .menu-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(255,107,107,0.1);
+        .menu-item:active {
+            transform: scale(0.99);
+            background: #fff5f5;
         }
 
         .menu-item.selected {
-            background: linear-gradient(135deg, #ff6b6b20, #ff8e8820);
+            background: linear-gradient(135deg, #ff6b6b10, #ff8e8810);
             border-left: 4px solid #ff8e88;
         }
 
-        .menu-item-content {
+        .menu-item-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .menu-item-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* 评分区域 */
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .average-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #fff0e6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .stars {
+            color: #ffb347;
+            letter-spacing: 2px;
+        }
+
+        .rating-count {
+            color: #999;
+            font-size: 0.75rem;
+        }
+
+        /* 用户评分 */
+        .user-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #ddd;
+            cursor: pointer;
+            padding: 0 2px;
+            transition: all 0.1s;
+        }
+
+        .star-btn.active {
+            color: #ffb347;
+        }
+
+        .star-btn:active {
+            transform: scale(1.2);
+        }
+
+        /* 点评区域 */
+        .review-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+        }
+
+        .review-input {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .review-input input {
             flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .review-input button {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e88);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .review-input button:active {
+            transform: scale(0.95);
+        }
+
+        .reviews-list {
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        .review-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #666;
+        }
+
+        .review-time {
+            font-size: 0.7rem;
+            color: #999;
+            margin-left: 6px;
         }
 
         .menu-item-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
+            margin-top: 8px;
+            justify-content: flex-end;
         }
 
         .btn-icon {
             width: 36px;
             height: 36px;
-            border-radius: 10px;
+            border-radius: 18px;
             border: none;
             background: #f0f0f0;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-icon:hover {
+        .btn-icon:active {
+            transform: scale(0.9);
             background: #e0e0e0;
-            transform: scale(1.1);
         }
 
-        .btn-icon.delete:hover {
+        .btn-icon.delete:active {
             background: #ff4757;
             color: white;
         }
 
+        /* 添加表单 - 手机端优化 */
         .add-item-form {
             display: flex;
-            gap: 10px;
-            margin-top: 16px;
+            gap: 6px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
 
         .add-item-form input {
             flex: 1;
+            min-width: 150px;
             padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
         }
 
         .add-item-form button {
-            padding: 12px 24px;
+            padding: 12px 20px;
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
         }
 
-        /* 操作按钮 */
+        .add-item-form button:active {
+            transform: scale(0.95);
+        }
+
+        /* 操作按钮 - 手机端优化 */
         .action-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 16px 0;
         }
 
         .btn {
-            padding: 16px 24px;
+            padding: 12px 6px;
             border: none;
             border-radius: 30px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 4px;
             background: white;
             border: 2px solid #e0e0e0;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             color: white;
             border: none;
-            flex: 2;
         }
 
         .btn-success {
@@ -337,44 +484,28 @@
             border: none;
         }
 
-        .btn-primary:hover, .btn-success:hover, .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
-        }
-
-        /* 预览区域 */
+        /* 预览区域 - 手机端优化 */
         .preview-area {
             background: linear-gradient(135deg, #fff9f0, #fff0e6);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
+            border-radius: 18px;
+            padding: 16px;
+            margin: 16px 0;
             border: 2px dashed #ff8e88;
-        }
-
-        .preview-title {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .preview-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .preview-item {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: #333;
-        }
-
-        .preview-location {
-            font-size: 1rem;
-            color: #666;
+            word-break: break-word;
         }
 
         .selected-badge {
@@ -382,14 +513,15 @@
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
         }
 
-        /* 结果区域 */
+        /* 结果区域 - 手机端优化 */
         .result-area {
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             border-radius: 20px;
-            padding: 24px;
+            padding: 20px;
             color: white;
             text-align: center;
             opacity: 0.7;
@@ -398,88 +530,81 @@
 
         .result-area.confirmed {
             opacity: 1;
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px rgba(255,107,107,0.4);
+            transform: scale(1.01);
+            box-shadow: 0 15px 30px rgba(255,107,107,0.3);
         }
 
         .result-food {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin: 10px 0;
+            margin: 8px 0;
+            word-break: break-word;
         }
 
         .result-location {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
         .result-time {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.7;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
-        /* 名言区域 */
+        /* 名言区域 - 手机端优化 */
         .quote-area {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 16px;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 500;
             color: #ff6b6b;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-        }
-
-        .quote-area:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 30px rgba(255,107,107,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-top: 8px;
         }
 
         .quote-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
         }
 
         .quote-author {
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin-top: 6px;
+            font-size: 0.8rem;
             color: #999;
         }
 
-        /* 侧边栏 */
+        /* 侧边栏在手机端改为主内容区下方 */
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .stats-card {
             background: white;
-            border-radius: 30px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 18px;
         }
 
         .stats-header {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #333;
         }
 
         .stat-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #f0f0f0;
-        }
-
-        .stat-label {
-            color: #666;
+            font-size: 0.95rem;
         }
 
         .stat-value {
@@ -488,17 +613,15 @@
         }
 
         .history-list {
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 12px;
             background: #f8f9fa;
-            border-radius: 12px;
+            border-radius: 16px;
             margin-bottom: 8px;
             font-size: 0.9rem;
         }
@@ -511,12 +634,9 @@
             border-left: 4px solid #ff9f1c;
         }
 
-        .history-info {
-            flex: 1;
-        }
-
         .history-item-name {
             font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .history-item-detail {
@@ -526,27 +646,8 @@
 
         .history-time {
             color: #999;
-            font-size: 0.75rem;
-            text-align: right;
-        }
-
-        .history-type {
-            padding: 2px 8px;
-            border-radius: 12px;
             font-size: 0.7rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-
-        .type-food {
-            background: #ff6b6b20;
-            color: #ff6b6b;
-        }
-
-        .type-drink {
-            background: #ff9f1c20;
-            color: #ff9f1c;
+            margin-top: 4px;
         }
 
         .clear-btn {
@@ -554,36 +655,42 @@
             padding: 12px;
             background: #f0f0f0;
             border: none;
-            border-radius: 12px;
-            margin-top: 16px;
+            border-radius: 30px;
+            margin-top: 12px;
             cursor: pointer;
             color: #666;
+            font-size: 0.95rem;
         }
 
-        .clear-btn:hover {
+        .clear-btn:active {
             background: #ff4757;
             color: white;
         }
 
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 16px;
+            right: 16px;
+            left: 16px;
             background: #00b09b;
             color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transform: translateX(400px);
+            padding: 14px 20px;
+            border-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-150%);
             transition: transform 0.3s;
             z-index: 1000;
+            text-align: center;
+            font-weight: 600;
+            max-width: 90%;
+            margin: 0 auto;
         }
 
         .notification.show {
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
-        /* 模态框 */
+        /* 模态框 - 手机端优化 */
         .modal {
             display: none;
             position: fixed;
@@ -594,7 +701,7 @@
             background: rgba(0,0,0,0.5);
             z-index: 2000;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
         }
 
         .modal.show {
@@ -603,18 +710,23 @@
 
         .modal-content {
             background: white;
-            border-radius: 30px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
+            border-radius: 30px 30px 0 0;
+            padding: 24px 20px;
+            width: 100%;
             max-height: 80vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .modal-header {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             color: #ff6b6b;
         }
 
@@ -624,14 +736,8 @@
             justify-content: space-between;
             padding: 12px;
             background: #f8f9fa;
-            border-radius: 12px;
+            border-radius: 16px;
             margin-bottom: 8px;
-        }
-
-        .modal-item-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .modal-close {
@@ -643,7 +749,43 @@
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 16px;
+            font-size: 1rem;
+        }
+
+        /* 平板和桌面端优化 */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: 1200px;
+                display: grid;
+                grid-template-columns: 1fr 350px;
+                gap: 20px;
+            }
+            
+            .location-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .action-buttons {
+                display: flex;
+                gap: 12px;
+            }
+            
+            .modal-content {
+                border-radius: 30px;
+                max-width: 500px;
+                margin: auto;
+            }
+            
+            .notification {
+                left: auto;
+                right: 20px;
+                min-width: 300px;
+            }
         }
     </style>
 </head>
@@ -655,11 +797,11 @@
         <div class="modal-content">
             <div class="modal-header">🏠 管理食堂</div>
             <div id="locationList"></div>
-            <div class="add-item-form" style="margin: 20px 0;">
+            <div class="add-item-form" style="margin: 16px 0;">
                 <input type="text" id="newLocationName" placeholder="食堂名称">
                 <input type="text" id="newLocationFloor" placeholder="楼层（可选）">
-                <input type="text" id="newLocationIcon" placeholder="图标（如 🏠）">
-                <button onclick="addLocation()">添加食堂</button>
+                <input type="text" id="newLocationIcon" placeholder="图标">
+                <button onclick="addLocation()">添加</button>
             </div>
             <button class="modal-close" onclick="closeModal('locationModal')">关闭</button>
         </div>
@@ -669,10 +811,10 @@
         <div class="modal-content">
             <div class="modal-header">🥤 管理饮料品类</div>
             <div id="drinkCategoryList"></div>
-            <div class="add-item-form" style="margin: 20px 0;">
+            <div class="add-item-form" style="margin: 16px 0;">
                 <input type="text" id="newCategoryName" placeholder="品类名称">
-                <input type="text" id="newCategoryIcon" placeholder="图标（如 🧋）">
-                <button onclick="addDrinkCategory()">添加品类</button>
+                <input type="text" id="newCategoryIcon" placeholder="图标">
+                <button onclick="addDrinkCategory()">添加</button>
             </div>
             <button class="modal-close" onclick="closeModal('drinkCategoryModal')">关闭</button>
         </div>
@@ -684,25 +826,25 @@
             <div class="card">
                 <h1>
                     🍽️ 客官不可以
-                    <span style="font-size: 1rem; background: #f0f0f0; padding: 4px 12px; border-radius: 20px; color: #666;">v4.0 可定制版</span>
+                    <span class="version-badge">v5.0 评分版</span>
                 </h1>
                 
                 <!-- 使用说明 -->
                 <div class="instructions">
-                    <p>✨ <strong>客官，您来啦！</strong> 让本店帮您决定今天吃啥喝啥～</p>
-                    <p>🍜 <strong>选美食：</strong> 点击食堂 → 选菜 → 最终确定（才记录）</p>
-                    <p>🥤 <strong>选饮料：</strong> 点击品类 → 选饮料 → 最终确定</p>
-                    <p>⚡ <strong>随机玩法：</strong> 随机食堂/分类 → 随机菜品/饮料 → 一条龙随机</p>
-                    <p>✏️ <strong>定制菜单：</strong> 可添加/删除菜品、饮料、食堂、品类</p>
+                    <p>✨ <strong>客官，您来啦！</strong> 给美食打分点评吧～</p>
+                    <p>⭐ 点击星星给菜品打分（1-5星）</p>
+                    <p>💬 可以写点评，所有人可见</p>
+                    <p>📊 显示大众评分平均值</p>
+                    <p>🍜 新增：同和苑、消防站夜市</p>
                 </div>
                 
                 <!-- 选项卡 -->
                 <div class="tabs">
                     <button class="tab active" data-tab="food">
-                        🍜 今天吃什么
+                        🍜 吃什么
                     </button>
                     <button class="tab" data-tab="drink">
-                        🥤 今天喝什么
+                        🥤 喝什么
                     </button>
                 </div>
             </div>
@@ -721,18 +863,18 @@
                     <!-- 菜单区域 -->
                     <div class="menu-section">
                         <div class="menu-header">
-                            <h3 style="display: flex; align-items: center; gap: 8px;">
+                            <h3>
                                 <span>📋</span>
                                 <span id="foodLocationDisplay">惠风苑 1楼</span>
                             </h3>
-                            <span class="menu-count" id="foodMenuCount">12 种菜式</span>
+                            <span class="menu-count" id="foodMenuCount">0 种菜式</span>
                         </div>
                         <ul class="menu-list" id="foodMenuList"></ul>
                         
                         <!-- 添加新菜式 -->
                         <div class="add-item-form">
-                            <input type="text" id="newFoodItem" placeholder="输入新菜式...">
-                            <button onclick="addFoodItem()">➕ 添加</button>
+                            <input type="text" id="newFoodItem" placeholder="新菜式...">
+                            <button onclick="addFoodItem()">添加</button>
                         </div>
                     </div>
 
@@ -747,17 +889,17 @@
                                 <div class="preview-item" id="foodPreviewItem">——</div>
                                 <div class="preview-location" id="foodPreviewLocation">——</div>
                             </div>
-                            <button class="btn btn-success" id="confirmFoodBtn" style="padding: 12px 24px;">
-                                ✅ 最终确定
+                            <button class="btn btn-success" id="confirmFoodBtn" style="padding: 10px 20px;">
+                                确定
                             </button>
                         </div>
                     </div>
 
                     <!-- 操作按钮 -->
                     <div class="action-buttons">
-                        <button class="btn" id="randomFoodLocationBtn">🎲 随机食堂</button>
-                        <button class="btn btn-warning" id="randomFoodItemBtn">🍜 随机这个食堂的菜</button>
-                        <button class="btn btn-primary" id="randomFoodAllBtn">⚡ 一条龙随机</button>
+                        <button class="btn" id="randomFoodLocationBtn">🎲 食堂</button>
+                        <button class="btn btn-warning" id="randomFoodItemBtn">🍜 随机菜</button>
+                        <button class="btn btn-primary" id="randomFoodAllBtn">⚡ 一条龙</button>
                     </div>
                 </div>
             </div>
@@ -768,7 +910,7 @@
                     <!-- 品类管理和网格 -->
                     <div class="manage-section">
                         <button class="manage-btn" onclick="openModal('drinkCategoryModal')">
-                            <span>🥤</span> 管理饮料品类
+                            <span>🥤</span> 管理品类
                         </button>
                     </div>
                     <div class="location-grid" id="drinkCategoryGrid"></div>
@@ -776,18 +918,18 @@
                     <!-- 饮料菜单 -->
                     <div class="menu-section">
                         <div class="menu-header">
-                            <h3 style="display: flex; align-items: center; gap: 8px;">
+                            <h3>
                                 <span>🥤</span>
                                 <span id="drinkCategoryDisplay">奶茶</span>
                             </h3>
-                            <span class="menu-count" id="drinkMenuCount">8 种饮料</span>
+                            <span class="menu-count" id="drinkMenuCount">0 种饮料</span>
                         </div>
                         <ul class="menu-list" id="drinkMenuList"></ul>
                         
                         <!-- 添加新饮料 -->
                         <div class="add-item-form">
-                            <input type="text" id="newDrinkItem" placeholder="输入新饮料...">
-                            <button onclick="addDrinkItem()">➕ 添加</button>
+                            <input type="text" id="newDrinkItem" placeholder="新饮料...">
+                            <button onclick="addDrinkItem()">添加</button>
                         </div>
                     </div>
 
@@ -802,16 +944,16 @@
                                 <div class="preview-item" id="drinkPreviewItem">——</div>
                                 <div class="preview-location" id="drinkPreviewCategory">——</div>
                             </div>
-                            <button class="btn btn-success" id="confirmDrinkBtn" style="padding: 12px 24px;">
-                                ✅ 最终确定
+                            <button class="btn btn-success" id="confirmDrinkBtn" style="padding: 10px 20px;">
+                                确定
                             </button>
                         </div>
                     </div>
 
                     <!-- 操作按钮 -->
                     <div class="action-buttons">
-                        <button class="btn" id="randomDrinkCategoryBtn">🎲 随机分类</button>
-                        <button class="btn btn-warning" id="randomDrinkItemBtn">🥤 随机这个分类的饮料</button>
+                        <button class="btn" id="randomDrinkCategoryBtn">🎲 分类</button>
+                        <button class="btn btn-warning" id="randomDrinkItemBtn">🥤 随机饮料</button>
                         <button class="btn btn-primary" id="randomDrinkAllBtn">⚡ 随机一杯</button>
                     </div>
                 </div>
@@ -819,7 +961,7 @@
 
             <!-- 最终确认结果显示 -->
             <div class="card result-area" id="resultArea">
-                <div style="font-size: 1rem; opacity: 0.9;" id="resultType">今日最终选择</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;" id="resultType">今日最终选择</div>
                 <div class="result-food" id="resultItem">——</div>
                 <div class="result-location" id="resultDetail"></div>
                 <div class="result-time" id="resultTime"></div>
@@ -863,10 +1005,8 @@
                 <div class="stats-header">
                     <span>📜</span> 历史记录
                 </div>
-                <div class="history-list" id="historyList">
-                    <!-- 动态历史记录 -->
-                </div>
-                <button class="clear-btn" onclick="clearHistory()">清除所有历史</button>
+                <div class="history-list" id="historyList"></div>
+                <button class="clear-btn" onclick="clearHistory()">清除历史</button>
             </div>
         </div>
     </div>
@@ -878,10 +1018,14 @@
             DRINK_CATEGORIES: 'drinkCategories',
             FOOD_MENUS: 'foodMenus',
             DRINK_MENUS: 'drinkMenus',
-            HISTORY: 'history'
+            HISTORY: 'history',
+            FOOD_RATINGS: 'foodRatings',      // 新增：菜品评分
+            FOOD_REVIEWS: 'foodReviews',       // 新增：菜品点评
+            DRINK_RATINGS: 'drinkRatings',      // 新增：饮料评分
+            DRINK_REVIEWS: 'drinkReviews'       // 新增：饮料点评
         };
 
-        // 默认食堂数据
+        // 默认食堂数据（新增同和苑和消防站夜市）
         const defaultLocations = [
             { id: 'hfy1', name: '惠风苑', floor: '1楼', icon: '🏠' },
             { id: 'hfy2', name: '惠风苑', floor: '2楼', icon: '🏢' },
@@ -889,6 +1033,8 @@
             { id: 'lqy1', name: '朗清苑', floor: '1楼', icon: '🌿' },
             { id: 'lqy2', name: '朗清苑', floor: '2楼', icon: '🌳' },
             { id: 'lqy3', name: '朗清苑', floor: '3楼', icon: '🌲' },
+            { id: 'thy', name: '同和苑', floor: '', icon: '🏯' },
+            { id: 'xfz', name: '消防站夜市', floor: '', icon: '🌙' },
             { id: 'dk', name: '道科广场', floor: '', icon: '🏛️' },
             { id: 'cy', name: '畅园', floor: '', icon: '🌸' }
         ];
@@ -903,7 +1049,7 @@
             { id: 'milk', name: '鲜奶', icon: '🥛' }
         ];
 
-        // 默认美食菜单
+        // 默认美食菜单（新增同和苑和消防站夜市菜单）
         const defaultFoodMenus = {
             'hfy1': ['大排面', '葱油拌面', '鲜肉小笼包', '豆浆油条', '梅干菜扣肉饭', '牛肉粉丝汤'],
             'hfy2': ['麻辣香锅', '石锅拌饭', '韩式炸鸡', '部队火锅', '泡菜汤', '冷面'],
@@ -911,6 +1057,8 @@
             'lqy1': ['小馄饨', '生煎包', '锅贴', '蟹壳黄', '排骨年糕', '葱油拌面'],
             'lqy2': ['酸菜鱼', '水煮肉片', '毛血旺', '辣子鸡', '干锅花菜', '麻婆豆腐'],
             'lqy3': ['叉烧饭', '烧鹅饭', '白切鸡', '煲仔饭', '云吞面', '肠粉'],
+            'thy': ['瓦罐汤', '南昌拌粉', '赣南小炒肉', '藜蒿炒腊肉', '三杯鸡', '客家酿豆腐'],
+            'xfz': ['烤串', '铁板鱿鱼', '臭豆腐', '烤冷面', '章鱼烧', '炒河粉'],
             'dk': ['星巴克', '瑞幸咖啡', '麦当劳', '肯德基', '必胜客', 'Subway'],
             'cy': ['小火锅', '自助烧烤', '铁板烧', '日式料理', '泰国菜', '越南河粉']
         };
@@ -945,6 +1093,12 @@
         let foodMenus = loadFromStorage(STORAGE_KEYS.FOOD_MENUS, defaultFoodMenus);
         let drinkMenus = loadFromStorage(STORAGE_KEYS.DRINK_MENUS, defaultDrinkMenus);
         let history = loadFromStorage(STORAGE_KEYS.HISTORY, []);
+        
+        // 评分和点评数据
+        let foodRatings = loadFromStorage(STORAGE_KEYS.FOOD_RATINGS, {});
+        let foodReviews = loadFromStorage(STORAGE_KEYS.FOOD_REVIEWS, {});
+        let drinkRatings = loadFromStorage(STORAGE_KEYS.DRINK_RATINGS, {});
+        let drinkReviews = loadFromStorage(STORAGE_KEYS.DRINK_REVIEWS, {});
 
         let currentFoodLocation = locations[0]?.id || 'hfy1';
         let currentDrinkCategory = drinkCategories[0]?.id || 'milkTea';
@@ -955,6 +1109,15 @@
             food: null,
             drink: null
         };
+
+        // 当前用户ID（用于区分不同用户）
+        let userId = localStorage.getItem('userId') || generateUserId();
+
+        function generateUserId() {
+            const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userId', id);
+            return id;
+        }
 
         // ==================== 工具函数 ====================
         function loadFromStorage(key, defaultValue) {
@@ -968,6 +1131,10 @@
             localStorage.setItem(STORAGE_KEYS.FOOD_MENUS, JSON.stringify(foodMenus));
             localStorage.setItem(STORAGE_KEYS.DRINK_MENUS, JSON.stringify(drinkMenus));
             localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+            localStorage.setItem(STORAGE_KEYS.FOOD_RATINGS, JSON.stringify(foodRatings));
+            localStorage.setItem(STORAGE_KEYS.FOOD_REVIEWS, JSON.stringify(foodReviews));
+            localStorage.setItem(STORAGE_KEYS.DRINK_RATINGS, JSON.stringify(drinkRatings));
+            localStorage.setItem(STORAGE_KEYS.DRINK_REVIEWS, JSON.stringify(drinkReviews));
         }
 
         function showNotification(message) {
@@ -998,140 +1165,55 @@
             document.getElementById('quoteAuthor').textContent = `—— ${quote.author}`;
         }
 
-        // ==================== 模态框管理 ====================
-        window.openModal = function(modalId) {
-            document.getElementById(modalId).classList.add('show');
-            if (modalId === 'locationModal') renderLocationModal();
-            if (modalId === 'drinkCategoryModal') renderDrinkCategoryModal();
-        };
-
-        window.closeModal = function(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        };
-
-        function renderLocationModal() {
-            const list = document.getElementById('locationList');
-            list.innerHTML = locations.map((loc, index) => `
-                <div class="modal-item">
-                    <div class="modal-item-info">
-                        <span>${loc.icon}</span>
-                        <span>${loc.name} ${loc.floor || ''}</span>
-                    </div>
-                    <button class="btn-icon delete" onclick="deleteLocation(${index})">🗑️</button>
-                </div>
-            `).join('');
+        // ==================== 评分和点评函数 ====================
+        function getAverageRating(itemId, type) {
+            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
+            if (!ratings || Object.keys(ratings).length === 0) return 0;
+            
+            const values = Object.values(ratings);
+            const sum = values.reduce((a, b) => a + b, 0);
+            return (sum / values.length).toFixed(1);
         }
 
-        function renderDrinkCategoryModal() {
-            const list = document.getElementById('drinkCategoryList');
-            list.innerHTML = drinkCategories.map((cat, index) => `
-                <div class="modal-item">
-                    <div class="modal-item-info">
-                        <span>${cat.icon}</span>
-                        <span>${cat.name}</span>
-                    </div>
-                    <button class="btn-icon delete" onclick="deleteDrinkCategory(${index})">🗑️</button>
-                </div>
-            `).join('');
+        function getRatingCount(itemId, type) {
+            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
+            return ratings ? Object.keys(ratings).length : 0;
         }
 
-        // 添加食堂
-        window.addLocation = function() {
-            const name = document.getElementById('newLocationName').value.trim();
-            const floor = document.getElementById('newLocationFloor').value.trim();
-            const icon = document.getElementById('newLocationIcon').value.trim() || '🏠';
+        function getUserRating(itemId, type) {
+            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
+            return ratings && ratings[userId] ? ratings[userId] : 0;
+        }
+
+        function setUserRating(itemId, type, rating) {
+            const ratings = type === 'food' ? foodRatings : drinkRatings;
+            if (!ratings[itemId]) ratings[itemId] = {};
+            ratings[itemId][userId] = rating;
+            saveToStorage();
+        }
+
+        function addReview(itemId, type, review) {
+            const reviews = type === 'food' ? foodReviews : drinkReviews;
+            if (!reviews[itemId]) reviews[itemId] = [];
             
-            if (name) {
-                const id = name.toLowerCase().replace(/\s+/g, '') + (floor ? floor : '') + Date.now();
-                const newLocation = { id, name, floor, icon };
-                locations.push(newLocation);
-                
-                // 为新食堂创建空菜单
-                if (!foodMenus[id]) {
-                    foodMenus[id] = [];
-                }
-                
-                saveToStorage();
-                renderLocationModal();
-                renderFoodLocations();
-                
-                // 清空输入
-                document.getElementById('newLocationName').value = '';
-                document.getElementById('newLocationFloor').value = '';
-                document.getElementById('newLocationIcon').value = '';
-                
-                showNotification('✅ 新食堂已添加');
-            }
-        };
-
-        // 删除食堂
-        window.deleteLocation = function(index) {
-            if (confirm('确定要删除这个食堂吗？')) {
-                const locationId = locations[index].id;
-                locations.splice(index, 1);
-                delete foodMenus[locationId];
-                
-                // 如果当前选中的是被删除的食堂，切换到第一个
-                if (currentFoodLocation === locationId && locations.length > 0) {
-                    currentFoodLocation = locations[0].id;
-                }
-                
-                saveToStorage();
-                renderLocationModal();
-                renderFoodLocations();
-                renderFoodMenu();
-                
-                showNotification('✅ 食堂已删除');
-            }
-        };
-
-        // 添加饮料品类
-        window.addDrinkCategory = function() {
-            const name = document.getElementById('newCategoryName').value.trim();
-            const icon = document.getElementById('newCategoryIcon').value.trim() || '🥤';
+            reviews[itemId].push({
+                userId: userId,
+                text: review,
+                time: new Date().toISOString()
+            });
             
-            if (name) {
-                const id = name.toLowerCase().replace(/\s+/g, '') + Date.now();
-                const newCategory = { id, name, icon };
-                drinkCategories.push(newCategory);
-                
-                // 为新品类创建空菜单
-                if (!drinkMenus[id]) {
-                    drinkMenus[id] = [];
-                }
-                
-                saveToStorage();
-                renderDrinkCategoryModal();
-                renderDrinkCategories();
-                
-                // 清空输入
-                document.getElementById('newCategoryName').value = '';
-                document.getElementById('newCategoryIcon').value = '';
-                
-                showNotification('✅ 新品类已添加');
+            // 只保留最近10条点评
+            if (reviews[itemId].length > 10) {
+                reviews[itemId] = reviews[itemId].slice(-10);
             }
-        };
+            
+            saveToStorage();
+        }
 
-        // 删除饮料品类
-        window.deleteDrinkCategory = function(index) {
-            if (confirm('确定要删除这个品类吗？')) {
-                const categoryId = drinkCategories[index].id;
-                drinkCategories.splice(index, 1);
-                delete drinkMenus[categoryId];
-                
-                // 如果当前选中的是被删除的品类，切换到第一个
-                if (currentDrinkCategory === categoryId && drinkCategories.length > 0) {
-                    currentDrinkCategory = drinkCategories[0].id;
-                }
-                
-                saveToStorage();
-                renderDrinkCategoryModal();
-                renderDrinkCategories();
-                renderDrinkMenu();
-                
-                showNotification('✅ 品类已删除');
-            }
-        };
+        function getReviews(itemId, type) {
+            const reviews = type === 'food' ? foodReviews[itemId] : drinkReviews[itemId];
+            return reviews || [];
+        }
 
         // ==================== 渲染函数 ====================
         function renderFoodLocations() {
@@ -1169,16 +1251,60 @@
             
             const menuList = document.getElementById('foodMenuList');
             menuList.innerHTML = menu.map((item, index) => {
+                const itemId = `${currentFoodLocation}_${item}`;
+                const avgRating = getAverageRating(itemId, 'food');
+                const ratingCount = getRatingCount(itemId, 'food');
+                const userRating = getUserRating(itemId, 'food');
+                const reviews = getReviews(itemId, 'food');
                 const isSelected = currentSelection.food && 
                                   currentSelection.food.item === item && 
                                   currentSelection.food.locationId === currentFoodLocation;
+                
                 return `
                     <li class="menu-item ${isSelected ? 'selected' : ''}" 
                         onclick="selectFoodItem('${currentFoodLocation}', '${item.replace(/'/g, "\\'")}')">
-                        <div class="menu-item-content">
-                            <span>🍽️</span>
-                            <span>${item}</span>
+                        
+                        <div class="menu-item-header">
+                            <div class="menu-item-name">
+                                <span>🍽️</span>
+                                <span>${item}</span>
+                            </div>
+                            <div class="rating-container">
+                                ${avgRating > 0 ? `
+                                    <div class="average-rating">
+                                        <span class="stars">${'★'.repeat(Math.floor(avgRating))}${avgRating % 1 >= 0.5 ? '½' : ''}</span>
+                                        <span>${avgRating}</span>
+                                        <span class="rating-count">(${ratingCount})</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
+                        
+                        <!-- 用户评分 -->
+                        <div class="user-rating" onclick="event.stopPropagation()">
+                            ${[1,2,3,4,5].map(star => `
+                                <button class="star-btn ${star <= userRating ? 'active' : ''}" 
+                                        onclick="rateItem('${itemId}', 'food', ${star})">★</button>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- 点评区域 -->
+                        <div class="review-section" onclick="event.stopPropagation()">
+                            <div class="review-input">
+                                <input type="text" id="review_${itemId}" placeholder="写个点评..." 
+                                       onkeypress="if(event.key==='Enter') submitReview('${itemId}', 'food')">
+                                <button onclick="submitReview('${itemId}', 'food')">发表</button>
+                            </div>
+                            <div class="reviews-list">
+                                ${reviews.slice().reverse().map(r => `
+                                    <div class="review-item">
+                                        <span>💬 ${r.text}</span>
+                                        <span class="review-time">${formatTime(new Date(r.time)).slice(5,16)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
                         <div class="menu-item-actions" onclick="event.stopPropagation()">
                             <button class="btn-icon" onclick="editFoodItem('${currentFoodLocation}', ${index})">✏️</button>
                             <button class="btn-icon delete" onclick="deleteFoodItem('${currentFoodLocation}', ${index})">🗑️</button>
@@ -1199,16 +1325,60 @@
             
             const menuList = document.getElementById('drinkMenuList');
             menuList.innerHTML = menu.map((item, index) => {
+                const itemId = `${currentDrinkCategory}_${item}`;
+                const avgRating = getAverageRating(itemId, 'drink');
+                const ratingCount = getRatingCount(itemId, 'drink');
+                const userRating = getUserRating(itemId, 'drink');
+                const reviews = getReviews(itemId, 'drink');
                 const isSelected = currentSelection.drink && 
                                   currentSelection.drink.item === item && 
                                   currentSelection.drink.categoryId === currentDrinkCategory;
+                
                 return `
                     <li class="menu-item ${isSelected ? 'selected' : ''}" 
                         onclick="selectDrinkItem('${currentDrinkCategory}', '${item.replace(/'/g, "\\'")}')">
-                        <div class="menu-item-content">
-                            <span>🥤</span>
-                            <span>${item}</span>
+                        
+                        <div class="menu-item-header">
+                            <div class="menu-item-name">
+                                <span>🥤</span>
+                                <span>${item}</span>
+                            </div>
+                            <div class="rating-container">
+                                ${avgRating > 0 ? `
+                                    <div class="average-rating">
+                                        <span class="stars">${'★'.repeat(Math.floor(avgRating))}${avgRating % 1 >= 0.5 ? '½' : ''}</span>
+                                        <span>${avgRating}</span>
+                                        <span class="rating-count">(${ratingCount})</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
+                        
+                        <!-- 用户评分 -->
+                        <div class="user-rating" onclick="event.stopPropagation()">
+                            ${[1,2,3,4,5].map(star => `
+                                <button class="star-btn ${star <= userRating ? 'active' : ''}" 
+                                        onclick="rateItem('${itemId}', 'drink', ${star})">★</button>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- 点评区域 -->
+                        <div class="review-section" onclick="event.stopPropagation()">
+                            <div class="review-input">
+                                <input type="text" id="review_${itemId}" placeholder="写个点评..." 
+                                       onkeypress="if(event.key==='Enter') submitReview('${itemId}', 'drink')">
+                                <button onclick="submitReview('${itemId}', 'drink')">发表</button>
+                            </div>
+                            <div class="reviews-list">
+                                ${reviews.slice().reverse().map(r => `
+                                    <div class="review-item">
+                                        <span>💬 ${r.text}</span>
+                                        <span class="review-time">${formatTime(new Date(r.time)).slice(5,16)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
                         <div class="menu-item-actions" onclick="event.stopPropagation()">
                             <button class="btn-icon" onclick="editDrinkItem('${currentDrinkCategory}', ${index})">✏️</button>
                             <button class="btn-icon delete" onclick="deleteDrinkItem('${currentDrinkCategory}', ${index})">🗑️</button>
@@ -1217,6 +1387,32 @@
                 `;
             }).join('');
         }
+
+        // 评分和点评函数
+        window.rateItem = function(itemId, type, rating) {
+            setUserRating(itemId, type, rating);
+            if (type === 'food') {
+                renderFoodMenu();
+            } else {
+                renderDrinkMenu();
+            }
+            showNotification(`⭐ 评分已提交`);
+        };
+
+        window.submitReview = function(itemId, type) {
+            const input = document.getElementById(`review_${itemId}`);
+            const review = input.value.trim();
+            if (review) {
+                addReview(itemId, type, review);
+                if (type === 'food') {
+                    renderFoodMenu();
+                } else {
+                    renderDrinkMenu();
+                }
+                input.value = '';
+                showNotification(`💬 点评已发表`);
+            }
+        };
 
         function renderHistory() {
             const historyList = document.getElementById('historyList');
@@ -1229,16 +1425,9 @@
                 const date = new Date(item.timestamp);
                 return `
                     <div class="history-item ${item.type}">
-                        <div class="history-info">
-                            <span class="history-type ${item.type === 'food' ? 'type-food' : 'type-drink'}">
-                                ${item.type === 'food' ? '🍜' : '🥤'}
-                            </span>
-                            <div class="history-item-name">${item.item}</div>
-                            <div class="history-item-detail">${item.detail}</div>
-                        </div>
-                        <div class="history-time">
-                            ${formatTime(date)}
-                        </div>
+                        <div class="history-item-name">${item.item}</div>
+                        <div class="history-item-detail">${item.detail}</div>
+                        <div class="history-time">${formatTime(date)}</div>
                     </div>
                 `;
             }).join('');
@@ -1302,7 +1491,7 @@
                 document.getElementById('resultItem').textContent = lastConfirmed.item;
                 document.getElementById('resultDetail').textContent = lastConfirmed.detail;
                 document.getElementById('resultTime').textContent = 
-                    `⏱️ 确认时间：${formatTime(new Date(lastConfirmed.timestamp))}`;
+                    `⏱️ ${formatTime(new Date(lastConfirmed.timestamp))}`;
             } else {
                 resultArea.classList.remove('confirmed');
                 document.getElementById('resultType').textContent = '今日最终选择';
@@ -1536,6 +1725,131 @@
             }
         };
 
+        // 模态框管理
+        window.openModal = function(modalId) {
+            document.getElementById(modalId).classList.add('show');
+            if (modalId === 'locationModal') renderLocationModal();
+            if (modalId === 'drinkCategoryModal') renderDrinkCategoryModal();
+        };
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        };
+
+        function renderLocationModal() {
+            const list = document.getElementById('locationList');
+            list.innerHTML = locations.map((loc, index) => `
+                <div class="modal-item">
+                    <div class="modal-item-info">
+                        <span>${loc.icon}</span>
+                        <span>${loc.name} ${loc.floor || ''}</span>
+                    </div>
+                    <button class="btn-icon delete" onclick="deleteLocation(${index})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderDrinkCategoryModal() {
+            const list = document.getElementById('drinkCategoryList');
+            list.innerHTML = drinkCategories.map((cat, index) => `
+                <div class="modal-item">
+                    <div class="modal-item-info">
+                        <span>${cat.icon}</span>
+                        <span>${cat.name}</span>
+                    </div>
+                    <button class="btn-icon delete" onclick="deleteDrinkCategory(${index})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        window.addLocation = function() {
+            const name = document.getElementById('newLocationName').value.trim();
+            const floor = document.getElementById('newLocationFloor').value.trim();
+            const icon = document.getElementById('newLocationIcon').value.trim() || '🏠';
+            
+            if (name) {
+                const id = name.toLowerCase().replace(/\s+/g, '') + (floor ? floor : '') + Date.now();
+                const newLocation = { id, name, floor, icon };
+                locations.push(newLocation);
+                
+                if (!foodMenus[id]) {
+                    foodMenus[id] = [];
+                }
+                
+                saveToStorage();
+                renderLocationModal();
+                renderFoodLocations();
+                
+                document.getElementById('newLocationName').value = '';
+                document.getElementById('newLocationFloor').value = '';
+                document.getElementById('newLocationIcon').value = '';
+                
+                showNotification('✅ 新食堂已添加');
+            }
+        };
+
+        window.deleteLocation = function(index) {
+            if (confirm('确定要删除这个食堂吗？')) {
+                const locationId = locations[index].id;
+                locations.splice(index, 1);
+                delete foodMenus[locationId];
+                
+                if (currentFoodLocation === locationId && locations.length > 0) {
+                    currentFoodLocation = locations[0].id;
+                }
+                
+                saveToStorage();
+                renderLocationModal();
+                renderFoodLocations();
+                renderFoodMenu();
+                
+                showNotification('✅ 食堂已删除');
+            }
+        };
+
+        window.addDrinkCategory = function() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            const icon = document.getElementById('newCategoryIcon').value.trim() || '🥤';
+            
+            if (name) {
+                const id = name.toLowerCase().replace(/\s+/g, '') + Date.now();
+                const newCategory = { id, name, icon };
+                drinkCategories.push(newCategory);
+                
+                if (!drinkMenus[id]) {
+                    drinkMenus[id] = [];
+                }
+                
+                saveToStorage();
+                renderDrinkCategoryModal();
+                renderDrinkCategories();
+                
+                document.getElementById('newCategoryName').value = '';
+                document.getElementById('newCategoryIcon').value = '';
+                
+                showNotification('✅ 新品类已添加');
+            }
+        };
+
+        window.deleteDrinkCategory = function(index) {
+            if (confirm('确定要删除这个品类吗？')) {
+                const categoryId = drinkCategories[index].id;
+                drinkCategories.splice(index, 1);
+                delete drinkMenus[categoryId];
+                
+                if (currentDrinkCategory === categoryId && drinkCategories.length > 0) {
+                    currentDrinkCategory = drinkCategories[0].id;
+                }
+                
+                saveToStorage();
+                renderDrinkCategoryModal();
+                renderDrinkCategories();
+                renderDrinkMenu();
+                
+                showNotification('✅ 品类已删除');
+            }
+        };
+
         // 选项卡切换
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -1572,7 +1886,6 @@
             renderFinalResult();
             updateQuote();
             
-            // 每分钟更新一次名言
             setInterval(updateQuote, 60000);
         }
 
