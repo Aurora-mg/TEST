@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>🍽️ 客官不可以 · 大众评分版</title>
+    <title>🍽️ 客官不可以 · 大众评分同步版</title>
+    <!-- 腾讯云开发SDK -->
+    <script src="https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.4.1/cloudbase.full.js"></script>
     <style>
         /* 基础样式保持不变，只修改评分相关样式 */
         * {
@@ -816,7 +818,7 @@
             <div class="card">
                 <h1>
                     🍽️ 客官不可以
-                    <span class="version-badge">v7.0 大众评分版</span>
+                    <span class="version-badge">v7.0 云端同步版</span>
                 </h1>
                 
                 <!-- 使用说明 - 更新规则 -->
@@ -825,7 +827,7 @@
                     <p>⭐ <strong>大众评分：</strong> 所有用户的评分平均值（小字显示）</p>
                     <p>👤 <strong>我的评分：</strong> 点击星星给出您的评分</p>
                     <p>💬 <strong>大众点评：</strong> 所有人都能看到彼此的评价</p>
-                    <p>🔄 <strong>同步更新：</strong> 任何人添加的菜品大家都能看到</p>
+                    <p>🔄 <strong>云端同步：</strong> 您的评分和点评会同步给所有人</p>
                 </div>
                 
                 <!-- 选项卡 -->
@@ -1002,17 +1004,24 @@
     </div>
 
     <script>
-        // ==================== 数据存储 ====================
+        // ==================== 云开发初始化 ====================
+        // 【重要】请替换成你的环境ID
+        const ENV_ID = 'aurora-593-6gbm2ztz2fac01fd';  // 例如：'myapp-123456'
+        
+        // 初始化云开发
+        const app = cloudbase.init({
+            env: ENV_ID
+        });
+
+        // 获取数据库引用
+        const db = app.database();
+        const _ = db.command;
+
+        // ==================== 数据存储键名（用于本地降级）====================
         const STORAGE_KEYS = {
             LOCATIONS: 'locations',
             DRINK_CATEGORIES: 'drinkCategories',
-            FOOD_MENUS: 'foodMenus',
-            DRINK_MENUS: 'drinkMenus',
-            HISTORY: 'history',
-            PUBLIC_FOOD_RATINGS: 'publicFoodRatings',      // 大众评分 { itemId: { userId: rating } }
-            PUBLIC_FOOD_REVIEWS: 'publicFoodReviews',       // 大众点评 { itemId: [{ userId, text, time }] }
-            PUBLIC_DRINK_RATINGS: 'publicDrinkRatings',
-            PUBLIC_DRINK_REVIEWS: 'publicDrinkReviews'
+            HISTORY: 'history'
         };
 
         // 默认食堂数据（新增涵英楼负一层）
@@ -1040,7 +1049,7 @@
             { id: 'milk', name: '鲜奶', icon: '🥛' }
         ];
 
-        // 默认美食菜单
+        // 默认美食菜单（用于初始化数据库）
         const defaultFoodMenus = {
             'hfy1': ['大排面', '葱油拌面', '鲜肉小笼包', '豆浆油条', '梅干菜扣肉饭', '牛肉粉丝汤'],
             'hfy2': ['麻辣香锅', '石锅拌饭', '韩式炸鸡', '部队火锅', '泡菜汤', '冷面'],
@@ -1082,15 +1091,15 @@
         // ==================== 状态管理 ====================
         let locations = loadFromStorage(STORAGE_KEYS.LOCATIONS, defaultLocations);
         let drinkCategories = loadFromStorage(STORAGE_KEYS.DRINK_CATEGORIES, defaultDrinkCategories);
-        let foodMenus = loadFromStorage(STORAGE_KEYS.FOOD_MENUS, defaultFoodMenus);
-        let drinkMenus = loadFromStorage(STORAGE_KEYS.DRINK_MENUS, defaultDrinkMenus);
+        let foodMenus = {};
+        let drinkMenus = {};
         let history = loadFromStorage(STORAGE_KEYS.HISTORY, []);
         
-        // 大众评分和点评
-        let publicFoodRatings = loadFromStorage(STORAGE_KEYS.PUBLIC_FOOD_RATINGS, {});
-        let publicFoodReviews = loadFromStorage(STORAGE_KEYS.PUBLIC_FOOD_REVIEWS, {});
-        let publicDrinkRatings = loadFromStorage(STORAGE_KEYS.PUBLIC_DRINK_RATINGS, {});
-        let publicDrinkReviews = loadFromStorage(STORAGE_KEYS.PUBLIC_DRINK_REVIEWS, {});
+        // 云端数据
+        let publicFoodRatings = {};
+        let publicFoodReviews = {};
+        let publicDrinkRatings = {};
+        let publicDrinkReviews = {};
 
         // 当前用户ID
         let userId = localStorage.getItem('userId') || generateUserId();
@@ -1120,13 +1129,7 @@
         function saveToStorage() {
             localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(locations));
             localStorage.setItem(STORAGE_KEYS.DRINK_CATEGORIES, JSON.stringify(drinkCategories));
-            localStorage.setItem(STORAGE_KEYS.FOOD_MENUS, JSON.stringify(foodMenus));
-            localStorage.setItem(STORAGE_KEYS.DRINK_MENUS, JSON.stringify(drinkMenus));
             localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
-            localStorage.setItem(STORAGE_KEYS.PUBLIC_FOOD_RATINGS, JSON.stringify(publicFoodRatings));
-            localStorage.setItem(STORAGE_KEYS.PUBLIC_FOOD_REVIEWS, JSON.stringify(publicFoodReviews));
-            localStorage.setItem(STORAGE_KEYS.PUBLIC_DRINK_RATINGS, JSON.stringify(publicDrinkRatings));
-            localStorage.setItem(STORAGE_KEYS.PUBLIC_DRINK_REVIEWS, JSON.stringify(publicDrinkReviews));
         }
 
         function showNotification(message) {
@@ -1157,7 +1160,127 @@
             document.getElementById('quoteAuthor').textContent = `—— ${quote.author}`;
         }
 
-        // ==================== 大众评分和点评函数 ====================
+        // ==================== 云端数据加载函数 ====================
+        async function loadAllData() {
+            try {
+                // 加载菜品
+                const { data: foodsData } = await db.collection('foods').get();
+                const newFoodMenus = {};
+                foodsData.forEach(item => {
+                    if (!newFoodMenus[item.locationId]) newFoodMenus[item.locationId] = [];
+                    newFoodMenus[item.locationId].push(item.name);
+                });
+                foodMenus = Object.keys(newFoodMenus).length > 0 ? newFoodMenus : defaultFoodMenus;
+
+                // 加载饮料
+                const { data: drinksData } = await db.collection('drinks').get();
+                const newDrinkMenus = {};
+                drinksData.forEach(item => {
+                    if (!newDrinkMenus[item.categoryId]) newDrinkMenus[item.categoryId] = [];
+                    newDrinkMenus[item.categoryId].push(item.name);
+                });
+                drinkMenus = Object.keys(newDrinkMenus).length > 0 ? newDrinkMenus : defaultDrinkMenus;
+
+                // 加载评分
+                const { data: ratingsData } = await db.collection('ratings').get();
+                const newFoodRatings = {};
+                const newDrinkRatings = {};
+                ratingsData.forEach(item => {
+                    if (item.itemType === 'food') {
+                        if (!newFoodRatings[item.itemId]) newFoodRatings[item.itemId] = {};
+                        newFoodRatings[item.itemId][item.userId] = item.rating;
+                    } else {
+                        if (!newDrinkRatings[item.itemId]) newDrinkRatings[item.itemId] = {};
+                        newDrinkRatings[item.itemId][item.userId] = item.rating;
+                    }
+                });
+                publicFoodRatings = newFoodRatings;
+                publicDrinkRatings = newDrinkRatings;
+
+                // 加载点评
+                const { data: reviewsData } = await db.collection('reviews')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                const newFoodReviews = {};
+                const newDrinkReviews = {};
+                reviewsData.forEach(item => {
+                    const reviewItem = {
+                        userId: item.userId,
+                        text: item.content,
+                        time: item.createdAt
+                    };
+                    
+                    if (item.itemType === 'food') {
+                        if (!newFoodReviews[item.itemId]) newFoodReviews[item.itemId] = [];
+                        newFoodReviews[item.itemId].push(reviewItem);
+                        // 只保留最近10条
+                        if (newFoodReviews[item.itemId].length > 10) {
+                            newFoodReviews[item.itemId] = newFoodReviews[item.itemId].slice(0, 10);
+                        }
+                    } else {
+                        if (!newDrinkReviews[item.itemId]) newDrinkReviews[item.itemId] = [];
+                        newDrinkReviews[item.itemId].push(reviewItem);
+                        if (newDrinkReviews[item.itemId].length > 10) {
+                            newDrinkReviews[item.itemId] = newDrinkReviews[item.itemId].slice(0, 10);
+                        }
+                    }
+                });
+                publicFoodReviews = newFoodReviews;
+                publicDrinkReviews = newDrinkReviews;
+
+                console.log('云端数据加载成功');
+            } catch (error) {
+                console.error('加载云端数据失败，使用默认数据', error);
+                foodMenus = defaultFoodMenus;
+                drinkMenus = defaultDrinkMenus;
+                publicFoodRatings = {};
+                publicDrinkRatings = {};
+                publicFoodReviews = {};
+                publicDrinkReviews = {};
+            }
+        }
+
+        // ==================== 初始化默认数据到云端 ====================
+        async function initDefaultData() {
+            try {
+                // 检查是否有数据
+                const { data: foodsCheck } = await db.collection('foods').limit(1).get();
+                
+                if (foodsCheck.length === 0) {
+                    console.log('初始化默认菜品到云端...');
+                    
+                    // 批量添加默认菜品
+                    for (const [locationId, items] of Object.entries(defaultFoodMenus)) {
+                        for (const name of items) {
+                            await db.collection('foods').add({
+                                locationId: locationId,
+                                name: name,
+                                createdBy: 'system',
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                    }
+                    
+                    // 批量添加默认饮料
+                    for (const [categoryId, items] of Object.entries(defaultDrinkMenus)) {
+                        for (const name of items) {
+                            await db.collection('drinks').add({
+                                categoryId: categoryId,
+                                name: name,
+                                createdBy: 'system',
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                    }
+                    
+                    console.log('默认数据初始化完成');
+                }
+            } catch (error) {
+                console.error('初始化默认数据失败', error);
+            }
+        }
+
+        // ==================== 大众评分和点评函数（云端版）====================
         function getAverageRating(itemId, type) {
             const ratings = type === 'food' ? publicFoodRatings[itemId] : publicDrinkRatings[itemId];
             if (!ratings || Object.keys(ratings).length === 0) return null;
@@ -1177,49 +1300,169 @@
             return ratings && ratings[userId] ? ratings[userId] : 0;
         }
 
-        function setUserRating(itemId, type, rating) {
-            const ratings = type === 'food' ? publicFoodRatings : publicDrinkRatings;
-            if (!ratings[itemId]) ratings[itemId] = {};
-            ratings[itemId][userId] = rating;
-            saveToStorage();
-        }
-
-        function addReview(itemId, type, review) {
-            const reviews = type === 'food' ? publicFoodReviews : publicDrinkReviews;
-            if (!reviews[itemId]) reviews[itemId] = [];
-            
-            reviews[itemId].push({
-                userId: userId,
-                text: review,
-                time: new Date().toISOString()
-            });
-            
-            // 只保留最近10条点评
-            if (reviews[itemId].length > 10) {
-                reviews[itemId] = reviews[itemId].slice(-10);
+        // ==================== 云端操作函数 ====================
+        async function addFoodItemToCloud(locationId, itemName) {
+            try {
+                // 先检查是否已存在
+                const { data: existing } = await db.collection('foods')
+                    .where({
+                        locationId: locationId,
+                        name: itemName
+                    })
+                    .get();
+                
+                if (existing.length > 0) {
+                    showNotification('❌ 该菜品已存在');
+                    return false;
+                }
+                
+                await db.collection('foods').add({
+                    locationId: locationId,
+                    name: itemName,
+                    createdBy: userId,
+                    createdAt: new Date().toISOString()
+                });
+                
+                // 重新加载数据
+                await loadAllData();
+                showNotification('✅ 新菜式已添加，大家都能看到');
+                return true;
+            } catch (error) {
+                console.error('添加失败', error);
+                showNotification('❌ 添加失败，请重试');
+                return false;
             }
-            
-            saveToStorage();
         }
 
-        function getReviews(itemId, type) {
-            const reviews = type === 'food' ? publicFoodReviews[itemId] : publicDrinkReviews[itemId];
-            return reviews || [];
-        }
-
-        // 重命名时迁移评分和点评
-        function migrateItemRatings(oldItemId, newItemId, type) {
-            const ratings = type === 'food' ? publicFoodRatings : publicDrinkRatings;
-            const reviews = type === 'food' ? publicFoodReviews : publicDrinkReviews;
-            
-            if (ratings[oldItemId]) {
-                ratings[newItemId] = ratings[oldItemId];
-                delete ratings[oldItemId];
+        async function deleteFoodItemFromCloud(locationId, itemName) {
+            try {
+                const itemId = `${locationId}_${itemName}`;
+                
+                // 删除菜品
+                const { data: foods } = await db.collection('foods')
+                    .where({
+                        locationId: locationId,
+                        name: itemName
+                    })
+                    .get();
+                
+                for (let item of foods) {
+                    await db.collection('foods').doc(item._id).remove();
+                }
+                
+                // 删除相关评分
+                const { data: ratings } = await db.collection('ratings')
+                    .where({ itemId: itemId })
+                    .get();
+                
+                for (let item of ratings) {
+                    await db.collection('ratings').doc(item._id).remove();
+                }
+                
+                // 删除相关点评
+                const { data: reviews } = await db.collection('reviews')
+                    .where({ itemId: itemId })
+                    .get();
+                
+                for (let item of reviews) {
+                    await db.collection('reviews').doc(item._id).remove();
+                }
+                
+                // 重新加载数据
+                await loadAllData();
+                showNotification('✅ 菜品已删除');
+                return true;
+            } catch (error) {
+                console.error('删除失败', error);
+                return false;
             }
-            
-            if (reviews[oldItemId]) {
-                reviews[newItemId] = reviews[oldItemId];
-                delete reviews[oldItemId];
+        }
+
+        async function rateItemInCloud(itemId, type, rating) {
+            try {
+                // 检查是否已评过分
+                const { data: existing } = await db.collection('ratings')
+                    .where({
+                        itemId: itemId,
+                        userId: userId
+                    })
+                    .get();
+                
+                if (existing.length > 0) {
+                    // 更新
+                    await db.collection('ratings').doc(existing[0]._id).update({
+                        rating: rating,
+                        updatedAt: new Date().toISOString()
+                    });
+                } else {
+                    // 新增
+                    await db.collection('ratings').add({
+                        itemId: itemId,
+                        itemType: type,
+                        userId: userId,
+                        rating: rating,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+                
+                // 重新加载评分
+                const { data: ratingsData } = await db.collection('ratings')
+                    .where({ itemId: itemId })
+                    .get();
+                
+                const newRatings = {};
+                ratingsData.forEach(item => {
+                    newRatings[item.userId] = item.rating;
+                });
+                
+                if (type === 'food') {
+                    publicFoodRatings[itemId] = newRatings;
+                } else {
+                    publicDrinkRatings[itemId] = newRatings;
+                }
+                
+                showNotification(`⭐ 您的评分已同步到云端！`);
+                return true;
+            } catch (error) {
+                console.error('评分失败', error);
+                return false;
+            }
+        }
+
+        async function addReviewToCloud(itemId, type, content) {
+            try {
+                await db.collection('reviews').add({
+                    itemId: itemId,
+                    itemType: type,
+                    userId: userId,
+                    content: content,
+                    createdAt: new Date().toISOString()
+                });
+                
+                // 重新加载点评
+                const { data: reviewsData } = await db.collection('reviews')
+                    .where({ itemId: itemId })
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+                
+                const newReviews = reviewsData.map(item => ({
+                    userId: item.userId,
+                    text: item.content,
+                    time: item.createdAt
+                }));
+                
+                if (type === 'food') {
+                    publicFoodReviews[itemId] = newReviews;
+                } else {
+                    publicDrinkReviews[itemId] = newReviews;
+                }
+                
+                showNotification(`💬 点评已同步到云端！`);
+                return true;
+            } catch (error) {
+                console.error('点评失败', error);
+                return false;
             }
         }
 
@@ -1263,7 +1506,7 @@
                 const avgRating = getAverageRating(itemId, 'food');
                 const ratingCount = getRatingCount(itemId, 'food');
                 const userRating = getUserRating(itemId, 'food');
-                const reviews = getReviews(itemId, 'food');
+                const reviews = publicFoodReviews[itemId] || [];
                 const isSelected = currentSelection.food && 
                                   currentSelection.food.item === item && 
                                   currentSelection.food.locationId === currentFoodLocation;
@@ -1315,7 +1558,7 @@
                                 <button onclick="submitReview('${itemId}', 'food')">发表</button>
                             </div>
                             <div class="reviews-list">
-                                ${reviews.slice().reverse().map(r => `
+                                ${reviews.map(r => `
                                     <div class="review-item">
                                         <span class="reviewer-badge">${r.userId === userId ? '我' : '👤'}</span>
                                         <span>${r.text}</span>
@@ -1349,7 +1592,7 @@
                 const avgRating = getAverageRating(itemId, 'drink');
                 const ratingCount = getRatingCount(itemId, 'drink');
                 const userRating = getUserRating(itemId, 'drink');
-                const reviews = getReviews(itemId, 'drink');
+                const reviews = publicDrinkReviews[itemId] || [];
                 const isSelected = currentSelection.drink && 
                                   currentSelection.drink.item === item && 
                                   currentSelection.drink.categoryId === currentDrinkCategory;
@@ -1400,7 +1643,7 @@
                                 <button onclick="submitReview('${itemId}', 'drink')">发表</button>
                             </div>
                             <div class="reviews-list">
-                                ${reviews.slice().reverse().map(r => `
+                                ${reviews.map(r => `
                                     <div class="review-item">
                                         <span class="reviewer-badge">${r.userId === userId ? '我' : '👤'}</span>
                                         <span>${r.text}</span>
@@ -1418,32 +1661,6 @@
                 `;
             }).join('');
         }
-
-        // 评分和点评函数
-        window.rateItem = function(itemId, type, rating) {
-            setUserRating(itemId, type, rating);
-            if (type === 'food') {
-                renderFoodMenu();
-            } else {
-                renderDrinkMenu();
-            }
-            showNotification(`⭐ 您的评分：${rating}星`);
-        };
-
-        window.submitReview = function(itemId, type) {
-            const input = document.getElementById(`review_${itemId}`);
-            const review = input.value.trim();
-            if (review) {
-                addReview(itemId, type, review);
-                if (type === 'food') {
-                    renderFoodMenu();
-                } else {
-                    renderDrinkMenu();
-                }
-                input.value = '';
-                showNotification(`💬 点评已发表`);
-            }
-        };
 
         function renderHistory() {
             const historyList = document.getElementById('historyList');
@@ -1532,7 +1749,7 @@
             }
         }
 
-        // ==================== 操作函数 ====================
+        // ==================== 操作函数（调用云端）====================
         window.selectFoodLocation = function(id) {
             currentFoodLocation = id;
             renderFoodLocations();
@@ -1573,6 +1790,32 @@
             
             renderDrinkMenu();
             renderPreview();
+        };
+
+        // 评分
+        window.rateItem = async function(itemId, type, rating) {
+            await rateItemInCloud(itemId, type, rating);
+            if (type === 'food') {
+                renderFoodMenu();
+            } else {
+                renderDrinkMenu();
+            }
+        };
+
+        // 点评
+        window.submitReview = async function(itemId, type) {
+            const input = document.getElementById(`review_${itemId}`);
+            const review = input.value.trim();
+            
+            if (review) {
+                await addReviewToCloud(itemId, type, review);
+                if (type === 'food') {
+                    renderFoodMenu();
+                } else {
+                    renderDrinkMenu();
+                }
+                input.value = '';
+            }
         };
 
         // 确认选择
@@ -1687,99 +1930,118 @@
         });
 
         // 美食编辑功能
-        window.addFoodItem = function() {
+        window.addFoodItem = async function() {
             const input = document.getElementById('newFoodItem');
             const newItem = input.value.trim();
             if (newItem) {
-                if (!foodMenus[currentFoodLocation]) {
-                    foodMenus[currentFoodLocation] = [];
+                const success = await addFoodItemToCloud(currentFoodLocation, newItem);
+                if (success) {
+                    input.value = '';
+                    renderFoodMenu();
                 }
-                foodMenus[currentFoodLocation].push(newItem);
-                saveToStorage();
-                renderFoodMenu();
-                input.value = '';
-                showNotification('✅ 新菜式已添加，大家都能看到');
             }
         };
 
-        window.editFoodItem = function(locationId, index) {
+        window.editFoodItem = async function(locationId, index) {
             const oldName = foodMenus[locationId][index];
             const newName = prompt('编辑菜式名称:', oldName);
             
             if (newName && newName.trim() && newName !== oldName) {
-                const oldItemId = `${locationId}_${oldName}`;
-                const newItemId = `${locationId}_${newName.trim()}`;
-                
-                // 迁移大众评分和点评
-                migrateItemRatings(oldItemId, newItemId, 'food');
-                
-                foodMenus[locationId][index] = newName.trim();
-                saveToStorage();
-                renderFoodMenu();
-                showNotification(`✅ 已重命名为"${newName}"，评分已保留`);
+                // 先删除旧的，再添加新的（简化处理）
+                await deleteFoodItemFromCloud(locationId, oldName);
+                await addFoodItemToCloud(locationId, newName.trim());
+                showNotification(`✅ 已重命名为"${newName}"`);
             }
         };
 
-        window.deleteFoodItem = function(locationId, index) {
+        window.deleteFoodItem = async function(locationId, index) {
             const itemName = foodMenus[locationId][index];
-            
             if (confirm(`确定要删除"${itemName}"吗？`)) {
-                const itemId = `${locationId}_${itemName}`;
-                delete publicFoodRatings[itemId];
-                delete publicFoodReviews[itemId];
-                
-                foodMenus[locationId].splice(index, 1);
-                saveToStorage();
+                await deleteFoodItemFromCloud(locationId, itemName);
                 renderFoodMenu();
-                showNotification('✅ 菜式已删除');
             }
         };
 
         // 饮料编辑功能
-        window.addDrinkItem = function() {
+        window.addDrinkItem = async function() {
             const input = document.getElementById('newDrinkItem');
             const newItem = input.value.trim();
             if (newItem) {
-                if (!drinkMenus[currentDrinkCategory]) {
-                    drinkMenus[currentDrinkCategory] = [];
+                try {
+                    await db.collection('drinks').add({
+                        categoryId: currentDrinkCategory,
+                        name: newItem,
+                        createdBy: userId,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    await loadAllData();
+                    renderDrinkMenu();
+                    input.value = '';
+                    showNotification('✅ 新饮料已添加，大家都能看到');
+                } catch (error) {
+                    console.error('添加失败', error);
+                    showNotification('❌ 添加失败，请重试');
                 }
-                drinkMenus[currentDrinkCategory].push(newItem);
-                saveToStorage();
-                renderDrinkMenu();
-                input.value = '';
-                showNotification('✅ 新饮料已添加，大家都能看到');
             }
         };
 
-        window.editDrinkItem = function(categoryId, index) {
+        window.editDrinkItem = async function(categoryId, index) {
             const oldName = drinkMenus[categoryId][index];
             const newName = prompt('编辑饮料名称:', oldName);
             
             if (newName && newName.trim() && newName !== oldName) {
-                const oldItemId = `${categoryId}_${oldName}`;
-                const newItemId = `${categoryId}_${newName.trim()}`;
-                
-                migrateItemRatings(oldItemId, newItemId, 'drink');
-                
-                drinkMenus[categoryId][index] = newName.trim();
-                saveToStorage();
-                renderDrinkMenu();
-                showNotification(`✅ 已重命名为"${newName}"，评分已保留`);
+                try {
+                    // 删除旧的
+                    const { data: oldItems } = await db.collection('drinks')
+                        .where({
+                            categoryId: categoryId,
+                            name: oldName
+                        })
+                        .get();
+                    
+                    for (let item of oldItems) {
+                        await db.collection('drinks').doc(item._id).remove();
+                    }
+                    
+                    // 添加新的
+                    await db.collection('drinks').add({
+                        categoryId: categoryId,
+                        name: newName.trim(),
+                        createdBy: userId,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    await loadAllData();
+                    renderDrinkMenu();
+                    showNotification(`✅ 已重命名为"${newName}"`);
+                } catch (error) {
+                    console.error('编辑失败', error);
+                }
             }
         };
 
-        window.deleteDrinkItem = function(categoryId, index) {
+        window.deleteDrinkItem = async function(categoryId, index) {
             const itemName = drinkMenus[categoryId][index];
-            
             if (confirm(`确定要删除"${itemName}"吗？`)) {
-                const itemId = `${categoryId}_${itemName}`;
-                delete publicDrinkRatings[itemId];
-                delete publicDrinkReviews[itemId];
-                
-                drinkMenus[categoryId].splice(index, 1);
-                saveToStorage();
-                renderDrinkMenu();
-                showNotification('✅ 饮料已删除');
+                try {
+                    const { data: items } = await db.collection('drinks')
+                        .where({
+                            categoryId: categoryId,
+                            name: itemName
+                        })
+                        .get();
+                    
+                    for (let item of items) {
+                        await db.collection('drinks').doc(item._id).remove();
+                    }
+                    
+                    await loadAllData();
+                    renderDrinkMenu();
+                    showNotification('✅ 饮料已删除');
+                } catch (error) {
+                    console.error('删除失败', error);
+                }
             }
         };
 
@@ -1830,10 +2092,6 @@
                 const newLocation = { id, name, floor, icon };
                 locations.push(newLocation);
                 
-                if (!foodMenus[id]) {
-                    foodMenus[id] = [];
-                }
-                
                 saveToStorage();
                 renderLocationModal();
                 renderFoodLocations();
@@ -1850,7 +2108,6 @@
             if (confirm('确定要删除这个食堂吗？')) {
                 const locationId = locations[index].id;
                 locations.splice(index, 1);
-                delete foodMenus[locationId];
                 
                 if (currentFoodLocation === locationId && locations.length > 0) {
                     currentFoodLocation = locations[0].id;
@@ -1874,10 +2131,6 @@
                 const newCategory = { id, name, icon };
                 drinkCategories.push(newCategory);
                 
-                if (!drinkMenus[id]) {
-                    drinkMenus[id] = [];
-                }
-                
                 saveToStorage();
                 renderDrinkCategoryModal();
                 renderDrinkCategories();
@@ -1893,7 +2146,6 @@
             if (confirm('确定要删除这个品类吗？')) {
                 const categoryId = drinkCategories[index].id;
                 drinkCategories.splice(index, 1);
-                delete drinkMenus[categoryId];
                 
                 if (currentDrinkCategory === categoryId && drinkCategories.length > 0) {
                     currentDrinkCategory = drinkCategories[0].id;
@@ -1933,7 +2185,19 @@
         };
 
         // ==================== 初始化 ====================
-        function init() {
+        async function init() {
+            try {
+                // 先初始化默认数据（如果数据库为空）
+                await initDefaultData();
+                
+                // 加载所有云端数据
+                await loadAllData();
+            } catch (error) {
+                console.error('初始化失败，使用默认数据', error);
+                foodMenus = defaultFoodMenus;
+                drinkMenus = defaultDrinkMenus;
+            }
+            
             renderFoodLocations();
             renderDrinkCategories();
             renderFoodMenu();
@@ -1947,6 +2211,7 @@
             setInterval(updateQuote, 60000);
         }
 
+        // 启动
         init();
     </script>
 </body>
