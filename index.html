@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>🍽️ 客官不可以 · 美食评分版</title>
+    <title>🍽️ 客官不可以 · 个人评分版</title>
     <style>
+        /* 样式保持不变，和上一个版本完全一样 */
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +28,6 @@
             gap: 12px;
         }
 
-        /* 手机端优化：所有卡片圆角更大，间距更小 */
         .card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -59,7 +59,6 @@
             -webkit-text-fill-color: #666;
         }
 
-        /* 使用说明 - 手机端优化 */
         .instructions {
             background: #fff9f0;
             border-radius: 18px;
@@ -78,7 +77,6 @@
             flex-wrap: wrap;
         }
 
-        /* 选项卡 - 手机端优化 */
         .tabs {
             display: flex;
             gap: 8px;
@@ -115,7 +113,6 @@
             display: block;
         }
 
-        /* 地点网格 - 手机端优化：2列布局 */
         .location-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -161,7 +158,6 @@
             color: #999;
         }
 
-        /* 管理按钮 - 手机端优化 */
         .manage-section {
             display: flex;
             gap: 8px;
@@ -190,7 +186,6 @@
             color: white;
         }
 
-        /* 菜单区域 - 手机端优化 */
         .menu-section {
             background: #f8f9fa;
             border-radius: 18px;
@@ -230,7 +225,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 菜单项 - 新增评分显示 */
         .menu-item {
             background: white;
             border-radius: 16px;
@@ -266,35 +260,24 @@
             font-size: 1rem;
         }
 
-        /* 评分区域 */
-        .rating-container {
+        /* 个人评分区域 - 简化版 */
+        .personal-rating {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
-        }
-
-        .average-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
             background: #fff0e6;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
         }
 
-        .stars {
-            color: #ffb347;
-            letter-spacing: 2px;
+        .personal-rating-label {
+            color: #ff8e88;
+            font-weight: 600;
+            font-size: 0.8rem;
         }
 
-        .rating-count {
-            color: #999;
-            font-size: 0.75rem;
-        }
-
-        /* 用户评分 */
         .user-rating {
             display: flex;
             align-items: center;
@@ -319,7 +302,6 @@
             transform: scale(1.2);
         }
 
-        /* 点评区域 */
         .review-section {
             margin-top: 10px;
             padding-top: 10px;
@@ -405,7 +387,6 @@
             color: white;
         }
 
-        /* 添加表单 - 手机端优化 */
         .add-item-form {
             display: flex;
             gap: 6px;
@@ -438,7 +419,6 @@
             transform: scale(0.95);
         }
 
-        /* 操作按钮 - 手机端优化 */
         .action-buttons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -484,7 +464,6 @@
             border: none;
         }
 
-        /* 预览区域 - 手机端优化 */
         .preview-area {
             background: linear-gradient(135deg, #fff9f0, #fff0e6);
             border-radius: 18px;
@@ -517,7 +496,6 @@
             white-space: nowrap;
         }
 
-        /* 结果区域 - 手机端优化 */
         .result-area {
             background: linear-gradient(135deg, #ff6b6b, #ff8e88);
             border-radius: 20px;
@@ -552,7 +530,6 @@
             margin-top: 8px;
         }
 
-        /* 名言区域 - 手机端优化 */
         .quote-area {
             background: white;
             border-radius: 18px;
@@ -570,13 +547,6 @@
             margin-bottom: 6px;
         }
 
-        .quote-author {
-            margin-top: 6px;
-            font-size: 0.8rem;
-            color: #999;
-        }
-
-        /* 侧边栏在手机端改为主内容区下方 */
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -690,7 +660,6 @@
             transform: translateY(0);
         }
 
-        /* 模态框 - 手机端优化 */
         .modal {
             display: none;
             position: fixed;
@@ -753,7 +722,6 @@
             font-size: 1rem;
         }
 
-        /* 平板和桌面端优化 */
         @media (min-width: 768px) {
             body {
                 padding: 20px;
@@ -826,16 +794,16 @@
             <div class="card">
                 <h1>
                     🍽️ 客官不可以
-                    <span class="version-badge">v5.0 评分版</span>
+                    <span class="version-badge">v6.0 个人评分版</span>
                 </h1>
                 
-                <!-- 使用说明 -->
+                <!-- 使用说明 - 更新规则 -->
                 <div class="instructions">
-                    <p>✨ <strong>客官，您来啦！</strong> 给美食打分点评吧～</p>
-                    <p>⭐ 点击星星给菜品打分（1-5星）</p>
-                    <p>💬 可以写点评，所有人可见</p>
-                    <p>📊 显示大众评分平均值</p>
-                    <p>🍜 新增：同和苑、消防站夜市</p>
+                    <p>✨ <strong>客官，您来啦！</strong> 这是您个人的美食日记本～</p>
+                    <p>⭐ <strong>评分规则：</strong> 点击星星给菜品打分，只记录您自己的评分</p>
+                    <p>💬 <strong>点评规则：</strong> 写的点评只保存在您自己的浏览器里</p>
+                    <p>📝 <strong>自定义：</strong> 可以自由增删菜品，所有修改只属于您自己</p>
+                    <p>🍜 <strong>新增食堂：</strong> 涵英楼负一层</p>
                 </div>
                 
                 <!-- 选项卡 -->
@@ -980,7 +948,7 @@
             <!-- 统计卡片 -->
             <div class="stats-card">
                 <div class="stats-header">
-                    <span>📊</span> 数据统计
+                    <span>📊</span> 我的统计
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">最常去的食堂</span>
@@ -1003,7 +971,7 @@
             <!-- 历史记录卡片 -->
             <div class="stats-card">
                 <div class="stats-header">
-                    <span>📜</span> 历史记录
+                    <span>📜</span> 我的历史
                 </div>
                 <div class="history-list" id="historyList"></div>
                 <button class="clear-btn" onclick="clearHistory()">清除历史</button>
@@ -1019,13 +987,13 @@
             FOOD_MENUS: 'foodMenus',
             DRINK_MENUS: 'drinkMenus',
             HISTORY: 'history',
-            FOOD_RATINGS: 'foodRatings',      // 新增：菜品评分
-            FOOD_REVIEWS: 'foodReviews',       // 新增：菜品点评
-            DRINK_RATINGS: 'drinkRatings',      // 新增：饮料评分
-            DRINK_REVIEWS: 'drinkReviews'       // 新增：饮料点评
+            MY_FOOD_RATINGS: 'myFoodRatings',      // 个人评分
+            MY_FOOD_REVIEWS: 'myFoodReviews',       // 个人点评
+            MY_DRINK_RATINGS: 'myDrinkRatings',
+            MY_DRINK_REVIEWS: 'myDrinkReviews'
         };
 
-        // 默认食堂数据（新增同和苑和消防站夜市）
+        // 默认食堂数据（新增涵英楼负一层）
         const defaultLocations = [
             { id: 'hfy1', name: '惠风苑', floor: '1楼', icon: '🏠' },
             { id: 'hfy2', name: '惠风苑', floor: '2楼', icon: '🏢' },
@@ -1033,6 +1001,7 @@
             { id: 'lqy1', name: '朗清苑', floor: '1楼', icon: '🌿' },
             { id: 'lqy2', name: '朗清苑', floor: '2楼', icon: '🌳' },
             { id: 'lqy3', name: '朗清苑', floor: '3楼', icon: '🌲' },
+            { id: 'hyl', name: '涵英楼', floor: '负一层', icon: '🏛️' },  // 新增食堂
             { id: 'thy', name: '同和苑', floor: '', icon: '🏯' },
             { id: 'xfz', name: '消防站夜市', floor: '', icon: '🌙' },
             { id: 'dk', name: '道科广场', floor: '', icon: '🏛️' },
@@ -1049,7 +1018,7 @@
             { id: 'milk', name: '鲜奶', icon: '🥛' }
         ];
 
-        // 默认美食菜单（新增同和苑和消防站夜市菜单）
+        // 默认美食菜单（新增涵英楼负一层菜单）
         const defaultFoodMenus = {
             'hfy1': ['大排面', '葱油拌面', '鲜肉小笼包', '豆浆油条', '梅干菜扣肉饭', '牛肉粉丝汤'],
             'hfy2': ['麻辣香锅', '石锅拌饭', '韩式炸鸡', '部队火锅', '泡菜汤', '冷面'],
@@ -1057,6 +1026,7 @@
             'lqy1': ['小馄饨', '生煎包', '锅贴', '蟹壳黄', '排骨年糕', '葱油拌面'],
             'lqy2': ['酸菜鱼', '水煮肉片', '毛血旺', '辣子鸡', '干锅花菜', '麻婆豆腐'],
             'lqy3': ['叉烧饭', '烧鹅饭', '白切鸡', '煲仔饭', '云吞面', '肠粉'],
+            'hyl': ['咖喱鸡排饭', '日式拉面', '韩式泡菜锅', '意式肉酱面', '三明治', '沙拉'],  // 涵英楼负一层
             'thy': ['瓦罐汤', '南昌拌粉', '赣南小炒肉', '藜蒿炒腊肉', '三杯鸡', '客家酿豆腐'],
             'xfz': ['烤串', '铁板鱿鱼', '臭豆腐', '烤冷面', '章鱼烧', '炒河粉'],
             'dk': ['星巴克', '瑞幸咖啡', '麦当劳', '肯德基', '必胜客', 'Subway'],
@@ -1094,11 +1064,11 @@
         let drinkMenus = loadFromStorage(STORAGE_KEYS.DRINK_MENUS, defaultDrinkMenus);
         let history = loadFromStorage(STORAGE_KEYS.HISTORY, []);
         
-        // 评分和点评数据
-        let foodRatings = loadFromStorage(STORAGE_KEYS.FOOD_RATINGS, {});
-        let foodReviews = loadFromStorage(STORAGE_KEYS.FOOD_REVIEWS, {});
-        let drinkRatings = loadFromStorage(STORAGE_KEYS.DRINK_RATINGS, {});
-        let drinkReviews = loadFromStorage(STORAGE_KEYS.DRINK_REVIEWS, {});
+        // 个人评分和点评（只存自己的）
+        let myFoodRatings = loadFromStorage(STORAGE_KEYS.MY_FOOD_RATINGS, {});
+        let myFoodReviews = loadFromStorage(STORAGE_KEYS.MY_FOOD_REVIEWS, {});
+        let myDrinkRatings = loadFromStorage(STORAGE_KEYS.MY_DRINK_RATINGS, {});
+        let myDrinkReviews = loadFromStorage(STORAGE_KEYS.MY_DRINK_REVIEWS, {});
 
         let currentFoodLocation = locations[0]?.id || 'hfy1';
         let currentDrinkCategory = drinkCategories[0]?.id || 'milkTea';
@@ -1109,15 +1079,6 @@
             food: null,
             drink: null
         };
-
-        // 当前用户ID（用于区分不同用户）
-        let userId = localStorage.getItem('userId') || generateUserId();
-
-        function generateUserId() {
-            const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('userId', id);
-            return id;
-        }
 
         // ==================== 工具函数 ====================
         function loadFromStorage(key, defaultValue) {
@@ -1131,10 +1092,10 @@
             localStorage.setItem(STORAGE_KEYS.FOOD_MENUS, JSON.stringify(foodMenus));
             localStorage.setItem(STORAGE_KEYS.DRINK_MENUS, JSON.stringify(drinkMenus));
             localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
-            localStorage.setItem(STORAGE_KEYS.FOOD_RATINGS, JSON.stringify(foodRatings));
-            localStorage.setItem(STORAGE_KEYS.FOOD_REVIEWS, JSON.stringify(foodReviews));
-            localStorage.setItem(STORAGE_KEYS.DRINK_RATINGS, JSON.stringify(drinkRatings));
-            localStorage.setItem(STORAGE_KEYS.DRINK_REVIEWS, JSON.stringify(drinkReviews));
+            localStorage.setItem(STORAGE_KEYS.MY_FOOD_RATINGS, JSON.stringify(myFoodRatings));
+            localStorage.setItem(STORAGE_KEYS.MY_FOOD_REVIEWS, JSON.stringify(myFoodReviews));
+            localStorage.setItem(STORAGE_KEYS.MY_DRINK_RATINGS, JSON.stringify(myDrinkRatings));
+            localStorage.setItem(STORAGE_KEYS.MY_DRINK_REVIEWS, JSON.stringify(myDrinkReviews));
         }
 
         function showNotification(message) {
@@ -1165,54 +1126,38 @@
             document.getElementById('quoteAuthor').textContent = `—— ${quote.author}`;
         }
 
-        // ==================== 评分和点评函数 ====================
-        function getAverageRating(itemId, type) {
-            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
-            if (!ratings || Object.keys(ratings).length === 0) return 0;
-            
-            const values = Object.values(ratings);
-            const sum = values.reduce((a, b) => a + b, 0);
-            return (sum / values.length).toFixed(1);
+        // ==================== 个人评分和点评函数 ====================
+        function getMyRating(itemId, type) {
+            const ratings = type === 'food' ? myFoodRatings : myDrinkRatings;
+            return ratings[itemId] || 0;
         }
 
-        function getRatingCount(itemId, type) {
-            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
-            return ratings ? Object.keys(ratings).length : 0;
-        }
-
-        function getUserRating(itemId, type) {
-            const ratings = type === 'food' ? foodRatings[itemId] : drinkRatings[itemId];
-            return ratings && ratings[userId] ? ratings[userId] : 0;
-        }
-
-        function setUserRating(itemId, type, rating) {
-            const ratings = type === 'food' ? foodRatings : drinkRatings;
-            if (!ratings[itemId]) ratings[itemId] = {};
-            ratings[itemId][userId] = rating;
+        function setMyRating(itemId, type, rating) {
+            const ratings = type === 'food' ? myFoodRatings : myDrinkRatings;
+            ratings[itemId] = rating;
             saveToStorage();
         }
 
-        function addReview(itemId, type, review) {
-            const reviews = type === 'food' ? foodReviews : drinkReviews;
+        function getMyReviews(itemId, type) {
+            const reviews = type === 'food' ? myFoodReviews : myDrinkReviews;
+            return reviews[itemId] || [];
+        }
+
+        function addMyReview(itemId, type, review) {
+            const reviews = type === 'food' ? myFoodReviews : myDrinkReviews;
             if (!reviews[itemId]) reviews[itemId] = [];
             
             reviews[itemId].push({
-                userId: userId,
                 text: review,
                 time: new Date().toISOString()
             });
             
-            // 只保留最近10条点评
-            if (reviews[itemId].length > 10) {
-                reviews[itemId] = reviews[itemId].slice(-10);
+            // 只保留最近5条点评
+            if (reviews[itemId].length > 5) {
+                reviews[itemId] = reviews[itemId].slice(-5);
             }
             
             saveToStorage();
-        }
-
-        function getReviews(itemId, type) {
-            const reviews = type === 'food' ? foodReviews[itemId] : drinkReviews[itemId];
-            return reviews || [];
         }
 
         // ==================== 渲染函数 ====================
@@ -1252,51 +1197,42 @@
             const menuList = document.getElementById('foodMenuList');
             menuList.innerHTML = menu.map((item, index) => {
                 const itemId = `${currentFoodLocation}_${item}`;
-                const avgRating = getAverageRating(itemId, 'food');
-                const ratingCount = getRatingCount(itemId, 'food');
-                const userRating = getUserRating(itemId, 'food');
-                const reviews = getReviews(itemId, 'food');
+                const myRating = getMyRating(itemId, 'food');
+                const myReviews = getMyReviews(itemId, 'food');
                 const isSelected = currentSelection.food && 
                                   currentSelection.food.item === item && 
                                   currentSelection.food.locationId === currentFoodLocation;
                 
                 return `
                     <li class="menu-item ${isSelected ? 'selected' : ''}" 
-                        onclick="selectFoodItem('${currentFoodLocation}', '${item.replace(/'/g, "\\'")}')">
+                        onclick="selectFoodItem('${currentFoodLocation}', '${item.replace(/'/g, "\\'")}')"
+                        data-item-id="${itemId}">
                         
                         <div class="menu-item-header">
                             <div class="menu-item-name">
                                 <span>🍽️</span>
                                 <span>${item}</span>
                             </div>
-                            <div class="rating-container">
-                                ${avgRating > 0 ? `
-                                    <div class="average-rating">
-                                        <span class="stars">${'★'.repeat(Math.floor(avgRating))}${avgRating % 1 >= 0.5 ? '½' : ''}</span>
-                                        <span>${avgRating}</span>
-                                        <span class="rating-count">(${ratingCount})</span>
-                                    </div>
-                                ` : ''}
+                            <div class="personal-rating">
+                                <span class="personal-rating-label">我的评分</span>
+                                <div class="user-rating" onclick="event.stopPropagation()">
+                                    ${[1,2,3,4,5].map(star => `
+                                        <button class="star-btn ${star <= myRating ? 'active' : ''}" 
+                                                onclick="rateItem('${itemId}', 'food', ${star})">★</button>
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- 用户评分 -->
-                        <div class="user-rating" onclick="event.stopPropagation()">
-                            ${[1,2,3,4,5].map(star => `
-                                <button class="star-btn ${star <= userRating ? 'active' : ''}" 
-                                        onclick="rateItem('${itemId}', 'food', ${star})">★</button>
-                            `).join('')}
                         </div>
                         
                         <!-- 点评区域 -->
                         <div class="review-section" onclick="event.stopPropagation()">
                             <div class="review-input">
-                                <input type="text" id="review_${itemId}" placeholder="写个点评..." 
+                                <input type="text" id="review_${itemId}" placeholder="写个点评（只对自己可见）..." 
                                        onkeypress="if(event.key==='Enter') submitReview('${itemId}', 'food')">
                                 <button onclick="submitReview('${itemId}', 'food')">发表</button>
                             </div>
                             <div class="reviews-list">
-                                ${reviews.slice().reverse().map(r => `
+                                ${myReviews.slice().reverse().map(r => `
                                     <div class="review-item">
                                         <span>💬 ${r.text}</span>
                                         <span class="review-time">${formatTime(new Date(r.time)).slice(5,16)}</span>
@@ -1326,51 +1262,42 @@
             const menuList = document.getElementById('drinkMenuList');
             menuList.innerHTML = menu.map((item, index) => {
                 const itemId = `${currentDrinkCategory}_${item}`;
-                const avgRating = getAverageRating(itemId, 'drink');
-                const ratingCount = getRatingCount(itemId, 'drink');
-                const userRating = getUserRating(itemId, 'drink');
-                const reviews = getReviews(itemId, 'drink');
+                const myRating = getMyRating(itemId, 'drink');
+                const myReviews = getMyReviews(itemId, 'drink');
                 const isSelected = currentSelection.drink && 
                                   currentSelection.drink.item === item && 
                                   currentSelection.drink.categoryId === currentDrinkCategory;
                 
                 return `
                     <li class="menu-item ${isSelected ? 'selected' : ''}" 
-                        onclick="selectDrinkItem('${currentDrinkCategory}', '${item.replace(/'/g, "\\'")}')">
+                        onclick="selectDrinkItem('${currentDrinkCategory}', '${item.replace(/'/g, "\\'")}')"
+                        data-item-id="${itemId}">
                         
                         <div class="menu-item-header">
                             <div class="menu-item-name">
                                 <span>🥤</span>
                                 <span>${item}</span>
                             </div>
-                            <div class="rating-container">
-                                ${avgRating > 0 ? `
-                                    <div class="average-rating">
-                                        <span class="stars">${'★'.repeat(Math.floor(avgRating))}${avgRating % 1 >= 0.5 ? '½' : ''}</span>
-                                        <span>${avgRating}</span>
-                                        <span class="rating-count">(${ratingCount})</span>
-                                    </div>
-                                ` : ''}
+                            <div class="personal-rating">
+                                <span class="personal-rating-label">我的评分</span>
+                                <div class="user-rating" onclick="event.stopPropagation()">
+                                    ${[1,2,3,4,5].map(star => `
+                                        <button class="star-btn ${star <= myRating ? 'active' : ''}" 
+                                                onclick="rateItem('${itemId}', 'drink', ${star})">★</button>
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- 用户评分 -->
-                        <div class="user-rating" onclick="event.stopPropagation()">
-                            ${[1,2,3,4,5].map(star => `
-                                <button class="star-btn ${star <= userRating ? 'active' : ''}" 
-                                        onclick="rateItem('${itemId}', 'drink', ${star})">★</button>
-                            `).join('')}
                         </div>
                         
                         <!-- 点评区域 -->
                         <div class="review-section" onclick="event.stopPropagation()">
                             <div class="review-input">
-                                <input type="text" id="review_${itemId}" placeholder="写个点评..." 
+                                <input type="text" id="review_${itemId}" placeholder="写个点评（只对自己可见）..." 
                                        onkeypress="if(event.key==='Enter') submitReview('${itemId}', 'drink')">
                                 <button onclick="submitReview('${itemId}', 'drink')">发表</button>
                             </div>
                             <div class="reviews-list">
-                                ${reviews.slice().reverse().map(r => `
+                                ${myReviews.slice().reverse().map(r => `
                                     <div class="review-item">
                                         <span>💬 ${r.text}</span>
                                         <span class="review-time">${formatTime(new Date(r.time)).slice(5,16)}</span>
@@ -1390,27 +1317,27 @@
 
         // 评分和点评函数
         window.rateItem = function(itemId, type, rating) {
-            setUserRating(itemId, type, rating);
+            setMyRating(itemId, type, rating);
             if (type === 'food') {
                 renderFoodMenu();
             } else {
                 renderDrinkMenu();
             }
-            showNotification(`⭐ 评分已提交`);
+            showNotification(`⭐ 我的评分：${rating}星`);
         };
 
         window.submitReview = function(itemId, type) {
             const input = document.getElementById(`review_${itemId}`);
             const review = input.value.trim();
             if (review) {
-                addReview(itemId, type, review);
+                addMyReview(itemId, type, review);
                 if (type === 'food') {
                     renderFoodMenu();
                 } else {
                     renderDrinkMenu();
                 }
                 input.value = '';
-                showNotification(`💬 点评已发表`);
+                showNotification(`💬 我的点评已保存`);
             }
         };
 
@@ -1487,14 +1414,14 @@
             if (lastConfirmed) {
                 resultArea.classList.add('confirmed');
                 document.getElementById('resultType').textContent = 
-                    lastConfirmed.type === 'food' ? '🍜 最终确认美食' : '🥤 最终确认饮料';
+                    lastConfirmed.type === 'food' ? '🍜 我的选择' : '🥤 我的选择';
                 document.getElementById('resultItem').textContent = lastConfirmed.item;
                 document.getElementById('resultDetail').textContent = lastConfirmed.detail;
                 document.getElementById('resultTime').textContent = 
                     `⏱️ ${formatTime(new Date(lastConfirmed.timestamp))}`;
             } else {
                 resultArea.classList.remove('confirmed');
-                document.getElementById('resultType').textContent = '今日最终选择';
+                document.getElementById('resultType').textContent = '今日选择';
                 document.getElementById('resultItem').textContent = '——';
                 document.getElementById('resultDetail').textContent = '';
                 document.getElementById('resultTime').textContent = '';
@@ -1568,7 +1495,7 @@
                 renderFinalResult();
                 updateQuote();
                 
-                showNotification('✅ 美食选择已确认！');
+                showNotification('✅ 选择已记录');
             }
         });
 
@@ -1594,7 +1521,7 @@
                 renderFinalResult();
                 updateQuote();
                 
-                showNotification('✅ 饮料选择已确认！');
+                showNotification('✅ 选择已记录');
             }
         });
 
@@ -1672,18 +1599,46 @@
         };
 
         window.editFoodItem = function(locationId, index) {
-            const newName = prompt('编辑菜式名称:', foodMenus[locationId][index]);
-            if (newName && newName.trim()) {
+            const oldName = foodMenus[locationId][index];
+            const newName = prompt('编辑菜式名称:', oldName);
+            
+            if (newName && newName.trim() && newName !== oldName) {
+                // 获取旧的菜品ID
+                const oldItemId = `${locationId}_${oldName}`;
+                const newItemId = `${locationId}_${newName.trim()}`;
+                
+                // 迁移个人评分和点评到新ID
+                if (myFoodRatings[oldItemId]) {
+                    myFoodRatings[newItemId] = myFoodRatings[oldItemId];
+                    delete myFoodRatings[oldItemId];
+                }
+                
+                if (myFoodReviews[oldItemId]) {
+                    myFoodReviews[newItemId] = myFoodReviews[oldItemId];
+                    delete myFoodReviews[oldItemId];
+                }
+                
+                // 更新菜单
                 foodMenus[locationId][index] = newName.trim();
+                
                 saveToStorage();
                 renderFoodMenu();
-                showNotification('✅ 菜式已更新');
+                showNotification(`✅ 已重命名为"${newName}"，评分已保留`);
             }
         };
 
         window.deleteFoodItem = function(locationId, index) {
-            if (confirm('确定要删除这道菜吗？')) {
+            const itemName = foodMenus[locationId][index];
+            
+            if (confirm(`确定要删除"${itemName}"吗？`)) {
+                // 删除相关的个人评分和点评
+                const itemId = `${locationId}_${itemName}`;
+                delete myFoodRatings[itemId];
+                delete myFoodReviews[itemId];
+                
+                // 删除菜单项
                 foodMenus[locationId].splice(index, 1);
+                
                 saveToStorage();
                 renderFoodMenu();
                 showNotification('✅ 菜式已删除');
@@ -1707,17 +1662,39 @@
         };
 
         window.editDrinkItem = function(categoryId, index) {
-            const newName = prompt('编辑饮料名称:', drinkMenus[categoryId][index]);
-            if (newName && newName.trim()) {
+            const oldName = drinkMenus[categoryId][index];
+            const newName = prompt('编辑饮料名称:', oldName);
+            
+            if (newName && newName.trim() && newName !== oldName) {
+                // 迁移评分和点评
+                const oldItemId = `${categoryId}_${oldName}`;
+                const newItemId = `${categoryId}_${newName.trim()}`;
+                
+                if (myDrinkRatings[oldItemId]) {
+                    myDrinkRatings[newItemId] = myDrinkRatings[oldItemId];
+                    delete myDrinkRatings[oldItemId];
+                }
+                
+                if (myDrinkReviews[oldItemId]) {
+                    myDrinkReviews[newItemId] = myDrinkReviews[oldItemId];
+                    delete myDrinkReviews[oldItemId];
+                }
+                
                 drinkMenus[categoryId][index] = newName.trim();
                 saveToStorage();
                 renderDrinkMenu();
-                showNotification('✅ 饮料已更新');
+                showNotification(`✅ 已重命名为"${newName}"，评分已保留`);
             }
         };
 
         window.deleteDrinkItem = function(categoryId, index) {
-            if (confirm('确定要删除这个饮料吗？')) {
+            const itemName = drinkMenus[categoryId][index];
+            
+            if (confirm(`确定要删除"${itemName}"吗？`)) {
+                const itemId = `${categoryId}_${itemName}`;
+                delete myDrinkRatings[itemId];
+                delete myDrinkReviews[itemId];
+                
                 drinkMenus[categoryId].splice(index, 1);
                 saveToStorage();
                 renderDrinkMenu();
@@ -1740,7 +1717,7 @@
             const list = document.getElementById('locationList');
             list.innerHTML = locations.map((loc, index) => `
                 <div class="modal-item">
-                    <div class="modal-item-info">
+                    <div>
                         <span>${loc.icon}</span>
                         <span>${loc.name} ${loc.floor || ''}</span>
                     </div>
@@ -1753,7 +1730,7 @@
             const list = document.getElementById('drinkCategoryList');
             list.innerHTML = drinkCategories.map((cat, index) => `
                 <div class="modal-item">
-                    <div class="modal-item-info">
+                    <div>
                         <span>${cat.icon}</span>
                         <span>${cat.name}</span>
                     </div>
